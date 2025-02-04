@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Story</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px;
+            border: none;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add a New Story</h1>
+        <form action="/add-story" method="POST">
+            <label for="storyName">Story Name:</label>
+            <input type="text" name="storyName" id="storyName" required>
+
+            <label for="recordId">Record ID:</label>
+            <input type="text" name="recordId" id="recordId" required>
+
+            <label for="Tid">Tid:</label>
+            <input type="text" name="Tid" id="Tid" required>
+
+            <label for="songId">Song ID (optional):</label>
+            <input type="text" name="songId" id="songId">
+
+            <label for="serialNumber">Serial Number (optional):</label>
+            <input type="number" name="serialNumber" id="serialNumber">
+
+            <button type="submit">Add Story</button>
+        </form>
+    </div>
+</body>
+</html>
