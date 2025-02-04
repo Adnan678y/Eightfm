@@ -7,30 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>📖 Story Manager</h1>
-    <table id="storyTable">
-        <thead>
-            <tr>
-                <th>Story Name</th>
-                <th>ID</th>
-                <th>Song ID</th>
-                <th>Serial Number</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <h1>Story Manager</h1>
+    <button onclick="fetchStories()">Load Stories</button>
+    <div id="stories"></div>
 
-    <h2>➕ Add/Edit Story</h2>
-    <form id="storyForm" action="/addStory" method="POST">
-        <input type="hidden" name="oldStory" id="oldStory">
-        <label>Story Name: <input type="text" name="story" id="story" required></label><br>
-        <label>ID: <input type="text" name="id" id="id" required></label><br>
-        <label>Song ID: <input type="text" name="songId" id="songId" required></label><br>
-        <label>Serial Number: <input type="number" name="serialNumber" id="serialNumber" required></label><br>
-        <button type="submit">💾 Save</button>
-    </form>
-
-    <script src="script.js"></script>
+    <script>
+        async function fetchStories() {
+            const res = await fetch("/api/all?raw=true");
+            const data = await res.json();
+            document.getElementById("stories").innerHTML = JSON.stringify(data, null, 4);
+        }
+    </script>
 </body>
 </html>
