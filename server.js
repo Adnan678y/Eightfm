@@ -3,59 +3,57 @@ const fs = require("fs");
 const path = require("path");
 
 const app = express();
-const PORT = 3000;
-
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Load database
+const dbPath = path.join(__dirname, "database.json");
+
+const loadDB = () => JSON.parse(fs.readFileSync(dbPath, "utf8"));
+const saveDB = (data) => fs.writeFileSync(dbPath, JSON.stringify(data, null, 4));
+
+// Get all stories
+app.get("/api/all", (req, res) => {
+    const db = loadDB();
+    if (req.query.raw) return res.json(db);
+    res.send(`<h1>All Stories</h1><pre>${JSON.stringify(db, null, 4)}</pre>`);
+});
+
+// Get latest episode for a story
+app.get("/api/story/:id", (req, res) => {
+    const { id } = req.params;
+    const db = loadDB();
+    if (!db[id]) return res.status(404).json({ error: "Story not found" });
+
+    res.json(db[id]);
+});
+
+// Add a new story
+app.post("/api/story", (req, res) => {
+    const { name, id, Tid, message, episode, link } = req.body;
+    if (!name || !id || !Tid || !episode || !link) {
+        return res.status(400).json({ error: "Missing fields" });
+    }
+
+    const db = loadDB();
+    db[name] = { id, Tid, message, episode, link };
+    saveDB(db);
+    res.json({ success: true, message: "Story added" });
+});
+
+// Delete a story
+app.delete("/api/story/:id", (req, res) => {
+    const { id } = req.params;
+    const db = loadDB();
+
+    if (!db[id]) return res.status(404).json({ error: "Story not found" });
+    
+    delete db[id];
+    saveDB(db);
+    res.json({ success: true, message: "Story deleted" });
+});
+
+// Serve static frontend
 app.use(express.static("public"));
 
-const DB_FILE = "database.json";
-
-function getStoryData() {
-    if (fs.existsSync(DB_FILE)) {
-        return JSON.parse(fs.readFileSync(DB_FILE, "utf-8"));
-    }
-    return {};
-}
-
-function saveStoryData(data) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 4), "utf-8");
-}
-
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-app.get("/all", (req, res) => {
-    res.json(getStoryData());
-});
-
-app.post("/addStory", (req, res) => {
-    const { story, id, songId, serialNumber } = req.body;
-    let stories = getStoryData();
-    if (!story || !id || !songId || !serialNumber) return res.status(400).send("❌ Missing fields!");
-    stories[story] = { id, songId, serialNumber };
-    saveStoryData(stories);
-    res.redirect("/");
-});
-
-app.post("/deleteStory", (req, res) => {
-    const { story } = req.body;
-    let stories = getStoryData();
-    if (!stories[story]) return res.status(404).send("❌ Story not found!");
-    delete stories[story];
-    saveStoryData(stories);
-    res.redirect("/");
-});
-
-app.post("/editStory", (req, res) => {
-    const { oldStory, story, id, songId, serialNumber } = req.body;
-    let stories = getStoryData();
-    if (!stories[oldStory]) return res.status(404).send("❌ Story not found!");
-    delete stories[oldStory];
-    stories[story] = { id, songId, serialNumber };
-    saveStoryData(stories);
-    res.redirect("/");
-});
-
-app.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
+// Start server
+module.exports = app;
